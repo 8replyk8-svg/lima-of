@@ -595,6 +595,14 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   updateSendState();
 });
 
+function upperFields(fields){
+  const out = {};
+  for(const k in fields){
+    out[k] = (typeof fields[k] === 'string') ? fields[k].toUpperCase() : fields[k];
+  }
+  return out;
+}
+
 sendBtn.addEventListener('click', async () => {
   const token = tokenEl.value.trim();
   if(!token){ setStatus('Falta el token — ábrelo en ⚙️ Configuración.', 'err'); return; }
@@ -604,7 +612,7 @@ sendBtn.addEventListener('click', async () => {
     const res = await fetch(DEFAULT_SCRIPT_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({ token, rows: records.map(r => r.fields) })
+      body: JSON.stringify({ token, rows: records.map(r => upperFields(r.fields)) })
     });
     const data = await res.json();
     if(data.ok){
