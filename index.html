@@ -5,28 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LIMA - OF</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
     --bg:#141220; --panel:#1c1929; --panel-2:#252134; --line:#372f4d;
-    --text:#f1ecf8; --muted:#a79bc4; --accent:#8b7cf0; --gold:#d4af37; --warn:#e0a458; --err:#e0685c;
+    --text:#f1ecf8; --muted:#a79bc4; --accent:#9884ff; --gold:#e8952e; --warn:#e0a458; --err:#e0685c;
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
     --serif:"Fraunces",Georgia,serif;
-    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --sans:"Space Grotesk","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:
-    radial-gradient(1200px 500px at 15% -10%, rgba(139,124,240,.14), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(212,175,55,.08), transparent 55%),
+    radial-gradient(1200px 500px at 15% -10%, rgba(152,132,255,.20), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(232,149,46,.14), transparent 55%),
     var(--bg);
     color:var(--text);font-family:var(--sans);padding:32px 20px 80px;}
-  .wrap{max-width:1120px;margin:0 auto;}
+  .wrap{max-width:1300px;margin:0 auto;}
+  @media (max-width:720px){ #statsBar{flex-direction:row!important;width:100%!important;flex-wrap:wrap;} #statsBar .stat-card{flex:1;min-width:130px;} }
   .tag{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
   h1{font-family:var(--serif);font-size:34px;margin:0 0 6px;font-weight:650;letter-spacing:-.01em;
-     background:linear-gradient(100deg,#f1ecf8 30%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+     background:linear-gradient(100deg,#f1ecf8 30%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+     filter:drop-shadow(0 0 18px rgba(152,132,255,.25));}
   p.sub{color:var(--muted);margin:0;font-size:14px;line-height:1.5;}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px;}
+  @keyframes fadeSlideIn{0%{opacity:0;transform:translateY(8px);}100%{opacity:1;transform:translateY(0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .panel{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px;overflow:hidden;animation:fadeSlideIn .35s ease-out;}
+  .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--gold));opacity:.85;box-shadow:0 0 8px rgba(152,132,255,.5);}
+  .stat-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:hidden;animation:fadeSlideIn .35s ease-out;}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);}
+  .stat-card.stat-warn::before{background:var(--warn);box-shadow:0 0 8px var(--warn);}
+  .stat-card.stat-gold::before{background:var(--gold);box-shadow:0 0 8px var(--gold);}
+  .stat-card.stat-ok::before{background:#39d98a;box-shadow:0 0 8px #39d98a;}
+  .stat-num{font-family:var(--serif);font-size:28px;font-weight:650;text-shadow:0 0 12px rgba(152,132,255,.4);}
+  .stat-card.stat-warn .stat-num{color:var(--warn);text-shadow:0 0 12px rgba(224,164,88,.4);}
+  .stat-card.stat-gold .stat-num{color:var(--gold);text-shadow:0 0 12px rgba(232,149,46,.4);}
+  .stat-card.stat-ok .stat-num{color:#39d98a;text-shadow:0 0 12px rgba(57,217,138,.4);}
+  .stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+  .nav-item{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--muted);transition:all .2s;border:1px solid transparent;}
+  .nav-item:hover{background:var(--panel-2);color:var(--text);}
+  .nav-item.active{background:linear-gradient(90deg,rgba(152,132,255,.18),rgba(232,149,46,.14));color:var(--text);border-color:rgba(232,149,46,.4);box-shadow:0 0 10px rgba(232,149,46,.15);}
+  .tab-btn{opacity:.6;}
+  .tab-btn.active{opacity:1;border-color:var(--gold);box-shadow:0 0 8px rgba(232,149,46,.3);}
+  #tabsPendientes{display:none;align-items:center;}
+  .spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+
   .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 14px;font-weight:600;}
   .cfg-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
   .cfg-row label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
@@ -52,7 +75,8 @@
   .logo-collab .x{color:var(--muted);font-size:13px;}
 
   /* Tarjetas de registro (sin scroll horizontal, responsive) */
-  .rec-card{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;}
+  .rec-card{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;animation:fadeSlideIn .3s ease-out;transition:border-color .2s;}
+  .rec-card:hover{border-color:var(--accent);}
   .rec-card.err{background:rgba(224,104,92,.08);border-color:var(--err);}
   .rec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .rec-file{font-family:var(--mono);font-size:10.5px;color:var(--muted);word-break:break-all;}
@@ -62,13 +86,16 @@
   .rec-grid .f input:focus{outline:none;border-color:var(--accent);}
   @media (max-width:480px){ .rec-grid{grid-template-columns:repeat(2,1fr);} }
   .badge{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:20px;display:inline-block;white-space:nowrap;}
-  .badge.ok{background:rgba(212,175,55,.15);color:var(--gold);}
+  .badge.ok{background:rgba(232,149,46,.15);color:var(--gold);box-shadow:0 0 8px rgba(232,149,46,.3);}
   .badge.warn{background:rgba(224,164,88,.15);color:var(--warn);}
   .rm{cursor:pointer;color:var(--muted);}
   .rm:hover{color:var(--err);}
   .actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
   button{font-family:inherit;font-size:13px;font-weight:600;border-radius:7px;border:1px solid var(--line);padding:10px 16px;cursor:pointer;background:var(--panel-2);color:var(--text);}
-  button.primary{background:var(--accent);border-color:var(--accent);color:#14121f;}
+  button{transition:box-shadow .2s, transform .15s, border-color .2s;}
+  button:hover{transform:translateY(-1px);}
+  button.primary{background:linear-gradient(90deg,var(--accent),var(--gold));border-color:transparent;color:#14121f;font-weight:700;box-shadow:0 0 12px rgba(152,132,255,.35);}
+  button.primary:hover{box-shadow:0 0 20px rgba(232,149,46,.5),0 0 40px rgba(152,132,255,.25);}
   button:disabled{opacity:.5;cursor:not-allowed;}
   #status{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
   #status.ok{color:var(--gold);} #status.err{color:var(--err);}
@@ -80,6 +107,69 @@
   #pinGate .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:32px;width:280px;text-align:center;}
   #pinGate input{text-align:center;letter-spacing:.3em;font-size:18px;padding:12px;}
   #pinGate .err{color:var(--err);font-size:12px;margin-top:10px;min-height:16px;}
+
+  /* Pago adjunto por tarjeta */
+  @keyframes pagoIn{
+    0%{opacity:0;transform:translateY(-6px) scale(.98);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
+  @keyframes pagoGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.35);border-color:var(--gold);}
+    50%{box-shadow:0 0 14px 2px rgba(212,175,55,.25);border-color:#e8cf7a;}
+  }
+  @keyframes pagoBadgeIn{
+    0%{opacity:0;transform:translateX(-4px);}
+    100%{opacity:1;transform:translateX(0);}
+  }
+  .pago-box{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .pago-box.active{
+    border:1px solid var(--gold);border-top:1px solid var(--gold);border-radius:8px;
+    padding:10px;margin-top:14px;
+    animation:pagoIn .35s ease-out, pagoGlow 1.8s ease-in-out 1;
+  }
+  .pago-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--gold);
+    background:rgba(212,175,55,.12);border-radius:20px;padding:2px 9px;margin-bottom:8px;
+    animation:pagoBadgeIn .3s ease-out;}
+  .pago-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);
+    animation:pagoGlow 1.4s ease-in-out infinite;}
+  .pago-box .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px;}
+  .pago-slot{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;background:var(--panel);}
+  .pago-drop{border:1.5px dashed var(--line);border-radius:6px;padding:8px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;min-height:40px;display:flex;align-items:center;justify-content:center;}
+  .pago-drop.drag{border-color:var(--gold);color:var(--text);}
+  .pago-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+  .pago-thumb{max-width:100%;max-height:140px;border-radius:6px;object-fit:contain;}
+
+  /* Pendientes de pago / reporte */
+  .pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px;}
+  .pcard{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;cursor:pointer;position:relative;animation:fadeSlideIn .3s ease-out;transition:transform .15s,border-color .15s;}
+  .pcard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .pcard.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,149,46,.35);background:rgba(232,149,46,.06);}
+  .pcard.sinfoto{cursor:default;opacity:.7;border-style:dashed;}
+  .pcard img{cursor:zoom-in;}
+  .pcard .check{cursor:pointer;}
+  .pcard img{width:100%;height:120px;object-fit:contain;background:#000;border-radius:6px;margin-bottom:6px;}
+  .pcard .placa{font-weight:700;font-size:13px;}
+  .pcard .fecha{font-size:10px;color:var(--muted);}
+  .pcard .check{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);background:var(--panel);}
+  .pcard.sel .check{background:var(--accent);border-color:var(--accent);}
+
+  #reportView{display:none;}
+  .report-group{margin-bottom:30px;}
+  .report-group-title{font-family:var(--serif);font-size:18px;font-weight:650;margin:0 0 4px;}
+  .report-group-sub{font-size:12px;color:var(--muted);margin:0 0 14px;}
+  .report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media print{ .report-group{page-break-before:always;break-before:page;} .report-group:first-child{page-break-before:auto;break-before:auto;} }
+  .rcell{border:1px solid #000;border-radius:4px;overflow:hidden;break-inside:avoid;page-break-inside:avoid;}
+  .rcell .rhead,.rcell .rfoot{text-align:center;font-weight:700;font-size:11px;padding:6px;border-bottom:1px solid #000;}
+  .rcell .rfoot{border-bottom:none;border-top:1px solid #000;font-size:14px;}
+  .rcell .rimg{height:200px;display:flex;align-items:center;justify-content:center;background:#f4f4f4;}
+  .rcell .rimg img{max-width:100%;max-height:100%;object-fit:contain;}
+  @media print{
+    body{background:#fff!important;color:#000!important;padding:0;}
+    .no-print{display:none!important;}
+    .rcell{color:#000;}
+    .rcell .rhead,.rcell .rfoot{color:#000;}
+  }
 </style>
 </head>
 <body>
@@ -111,6 +201,7 @@
     </div>
     <button id="gearBtn" title="Configuración" onclick="openSettings()" style="font-size:18px;padding:8px 12px;flex-shrink:0;">⚙️</button>
   </header>
+
 
   <div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;">
     <div class="panel" style="max-width:520px;width:100%;margin:0;">
@@ -155,7 +246,35 @@
   <datalist id="usoList"></datalist>
   <datalist id="pagoList"></datalist>
 
-  <div class="panel">
+  <div style="display:flex;gap:20px;align-items:flex-start;margin-top:20px;flex-wrap:wrap;">
+    <aside id="statsBar" style="display:flex;flex-direction:column;gap:8px;width:190px;flex-shrink:0;">
+      <nav class="panel" style="margin-top:0;padding:10px;display:flex;flex-direction:column;gap:4px;">
+        <div class="nav-item active" id="nav-inicio" onclick="showSection('inicio')">🏠 Inicio</div>
+        <div class="nav-item" id="nav-buscar" onclick="showSection('buscar')">🔍 Buscar</div>
+        <div class="nav-item" id="nav-pendientes" onclick="showSection('pendientes')">📋 Pendientes</div>
+        <div class="nav-item" id="nav-reportados" onclick="showSection('reportados')">📑 Reportados</div>
+        <div class="nav-item" id="nav-pagos" onclick="showSection('pagos')">💳 Reportar pagos</div>
+      </nav>
+      <div class="stat-card">
+        <div class="stat-num" id="statCargados">0</div>
+        <div class="stat-label">PDF cargados hoy</div>
+      </div>
+      <div class="stat-card stat-warn">
+        <div class="stat-num" id="statPendPago">—</div>
+        <div class="stat-label">Pendientes de pago</div>
+      </div>
+      <div class="stat-card stat-gold">
+        <div class="stat-num" id="statPendReporte">—</div>
+        <div class="stat-label">Capturas por reportar</div>
+      </div>
+      <div class="stat-card stat-ok">
+        <div class="stat-num" id="statReportadosHoy">—</div>
+        <div class="stat-label">Reportado hoy</div>
+      </div>
+    </aside>
+
+    <div id="mainCol" style="flex:1;min-width:280px;">
+      <div class="panel" id="panelPolizas">
     <h2>Pólizas</h2>
     <div class="drop" id="drop">
       <div><b>Suelta los PDF aquí</b> o haz clic para elegir archivos</div>
@@ -173,23 +292,40 @@
     </div>
   </div>
 
-  <div class="panel">
-    <h2>Buscar en el Sheet</h2>
-    <div class="cfg-row">
+  <div class="panel" id="panelBuscar" style="display:none;">
+    <h2 id="buscarTitle">Buscar en el Sheet</h2>
+    <div class="cfg-row" id="searchRow">
       <div class="field">
         <input type="text" id="searchInput" placeholder="Certificado, placa o nombre del asegurado...">
       </div>
       <button class="primary" id="searchBtn" onclick="runSearch()">Buscar</button>
-      <button id="pendingBtn" onclick="showPending()">Ver pendientes de pago</button>
       <button id="allBtn" onclick="loadAllRows()">Ver todo</button>
     </div>
+    <div class="cfg-row">
+      <div class="field">
+        <label>Aseguradora</label>
+        <select id="filterAseguradora">
+          <option value="">Todas</option>
+          <option value="Positiva">Positiva</option>
+          <option value="Rimac">Rimac</option>
+          <option value="Mapfre">Mapfre</option>
+          <option value="Interseguro">Interseguro</option>
+        </select>
+      </div>
+      <button id="btnHoy" onclick="loadHoy()">Subidas hoy</button>
+      <span id="tabsPendientes" style="display:none;gap:8px;">
+        <button class="tab-btn active" id="tabPendPago" onclick="setTabPend('pago')">Pendientes de pago</button>
+        <button class="tab-btn" id="tabPendRep" onclick="setTabPend('reporte')">Pendientes de reportar</button>
+      </span>
+    </div>
     <div class="hint" id="searchStatus" style="margin-top:4px;"></div>
+    <div id="fechaGroups" style="margin-top:10px;"></div>
     <div style="overflow-x:auto;margin-top:10px;">
-      <table id="searchTbl" style="display:none;min-width:820px;">
+      <table id="searchTbl" style="display:none;min-width:900px;">
         <thead>
           <tr>
             <th>Compañía</th><th>Certificado</th><th>F/Venta</th><th>Asegurado</th>
-            <th>Placa</th><th>Clase</th><th>Uso</th><th>Precio</th><th>Tipo Pago</th><th>F/Pago</th>
+            <th>Placa</th><th>Clase</th><th>Uso</th><th>Precio</th><th>Tipo Pago</th><th>F/Pago</th><th>F/Reporte</th><th></th>
           </tr>
         </thead>
         <tbody id="searchRows"></tbody>
@@ -197,7 +333,106 @@
     </div>
   </div>
 
+  <div class="panel" id="pagosPanel" style="display:none;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+    <div>
+      <h2 style="margin-bottom:10px;">Reportar pagos</h2>
+      <div class="cfg-row" style="margin-bottom:0;">
+        <div class="field"><label>Fecha de reporte</label><input type="date" id="fechaReporte"></div>
+        <button class="primary" onclick="openSelectPagos()">Reportar pendientes</button>
+        <button id="verUltimoBtn" style="display:none;" onclick="verUltimoReporte()">Ver último reporte generado</button>
+      </div>
+      <div class="hint" id="pagosLoadStatus" style="margin-top:8px;"></div>
+    </div>
+    <div id="pendingCountBadge" style="text-align:center;padding:10px 22px;border-radius:10px;background:rgba(232,149,46,.08);border:1px solid rgba(232,149,46,.3);min-width:110px;">
+      <div style="font-family:var(--serif);font-size:26px;font-weight:650;color:var(--gold);text-shadow:0 0 14px rgba(232,149,46,.6);" id="pendingCountNum">—</div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;">pendientes</div>
+    </div>
+  </div>
+    </div>
+  </div>
+
   <footer>Extracción hecha en tu navegador — los PDF no se suben a ningún servidor, solo los datos que confirmes.</footer>
+</div>
+
+<div id="selectModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;">
+  <div class="panel" style="max-width:1100px;width:100%;margin:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="margin:0;">Selecciona qué reportar</h2>
+      <span class="rm" style="font-size:18px;" onclick="closeSelectPagos()">✕</span>
+    </div>
+    <div class="hint" id="selectStatus" style="margin-bottom:8px;"></div>
+    <div style="display:flex;gap:16px;align-items:flex-start;">
+      <div class="pending-grid" id="pendingGrid" style="flex:1;min-width:0;"></div>
+      <div id="previewPane" style="display:none;width:260px;flex-shrink:0;position:sticky;top:0;">
+        <img id="previewImg" style="width:100%;border-radius:8px;border:1px solid var(--line);">
+        <div class="hint" id="previewLabel" style="margin-top:6px;text-align:center;"></div>
+      </div>
+    </div>
+    <div class="actions" style="margin-top:16px;">
+      <button class="primary" onclick="openConfirmPagos()">Continuar (<span id="selCount">0</span> seleccionadas)</button>
+      <button onclick="selectAllPagos()">Seleccionar todas</button>
+      <button onclick="closeSelectPagos()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="editPagoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:42;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;">
+  <div class="panel" style="max-width:420px;width:100%;margin:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="margin:0;">Actualizar pago</h2>
+      <span class="rm" style="font-size:18px;" onclick="closeEditPago()">✕</span>
+    </div>
+    <div class="hint" id="editPagoInfo" style="margin-bottom:14px;"></div>
+    <label style="font-size:11.5px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;">Tipo Pago</label>
+    <input type="text" id="editTipoPago" list="pagoList" style="margin-bottom:10px;" onchange="autoFillEditPago(this.value)">
+    <label style="font-size:11.5px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;">F/Pago</label>
+    <input type="text" id="editFPago" style="margin-bottom:10px;">
+    <label style="font-size:11.5px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;">N° Operación</label>
+    <input type="text" id="editNOperacion" style="margin-bottom:14px;">
+
+    <div class="pago-box active" id="editPagoBox" style="display:none;">
+      <div class="lbl">Captura de pago</div>
+      <div class="pago-drop" id="editPagoDrop" onclick="document.getElementById('editPagoFile').click()">
+        <img id="editPagoThumb" style="display:none;max-width:100%;max-height:140px;">
+        <span id="editPagoDropText">Pegar (Ctrl+V) o hacer clic para elegir la captura</span>
+      </div>
+      <input type="file" id="editPagoFile" accept="image/*" style="display:none;" onchange="handleEditPagoFile(this.files[0])">
+      <select id="editPagoCuenta" style="margin-top:8px;">
+        <option value="Cuentas">Cuentas (transferencias)</option>
+        <option value="BBVA">BBVA</option>
+        <option value="BCP">BCP</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="saveEditPago()" style="margin-top:14px;">Guardar cambio</button>
+    <div class="hint" id="editPagoStatus"></div>
+  </div>
+</div>
+
+<div id="confirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:41;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px;">
+  <div class="panel" style="max-width:640px;width:100%;margin:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="margin:0;">Confirmar antes de generar</h2>
+      <span class="rm" style="font-size:18px;" onclick="closeConfirmPagos()">✕</span>
+    </div>
+    <div class="hint" style="margin-bottom:10px;">Revisa que estén correctas. Se reportarán con fecha <b id="confirmFecha"></b>.</div>
+    <div id="confirmList" style="max-height:320px;overflow-y:auto;"></div>
+    <div class="actions" style="margin-top:16px;">
+      <button class="primary" onclick="finalizeReport()">Confirmar y generar PDF</button>
+      <button onclick="closeConfirmPagos()">← Volver a seleccionar</button>
+    </div>
+    <div class="hint" id="confirmStatus"></div>
+  </div>
+</div>
+
+<div class="wrap" id="reportView">
+  <div class="no-print" style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button onclick="backToMain()">← Volver</button>
+    <button class="primary" onclick="window.print()">Imprimir / Guardar PDF</button>
+    <button class="primary" onclick="generateWordReport()">Generar Word (.docx)</button>
+    <span class="hint" id="wordStatus"></span>
+  </div>
+  <div id="reportGroups"></div>
 </div>
 
 <script>
@@ -228,6 +463,8 @@ document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key=
 })();
 
 const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOb7x3w9XRSWMgY7nH0zQelq629_ZqiPwg3iLS19lbjVeTUrI3A279MdXNuDM2IoxG/exec';
+const PAGOS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxpb9Gsye1WktBrnJ_0vuGMEayYY5YT8HBzBvCHrgwbVSkMBL3SZDvBso0Pfih7WHky/exec';
+const PAGOS_TOKEN = 'lima-of-pagos-2026';
 const DEFAULT_CLASES = ['AUTOMOVIL','CMTA RURAL','MOTOCICLETA','CAMION','CMTA PICK UP','STATION WAGON','CMTA PANEL','MOTOTAXI','FURGONETA','REMOLCADOR','MICROBUS'];
 const DEFAULT_USOS = ['PARTICULAR','CARGA','TAXI','URBANO','ESCOLAR','COMERCIAL'];
 const DEFAULT_PAGOS = ['YAPE','PLIN','BBVA','BCP','TRANSFERENCIA','EFECTIVO','DEPOSITO'];
@@ -504,9 +741,9 @@ function parseSoat(rawText, filename){
     clase, placa,
     uso,
     precio, tipoPago: '',
-    fPago: todayStr(),
+    fPago: '',
     nOperacion: '',
-    fReporte: todayStr()
+    fReporte: ''
   };
 }
 
@@ -514,7 +751,7 @@ const FIELD_LABELS = [
   ['aseguradora','Compañía'], ['certificado','Certificado'], ['fVenta','F/Venta'],
   ['asegurado','Asegurado'], ['clase','Clase'],
   ['placa','Placa'], ['uso','Uso'], ['precio','Precio'], ['tipoPago','Tipo Pago'],
-  ['fPago','F/Pago'], ['nOperacion','N° Operación'], ['fReporte','F/Reporte']
+  ['fPago','F/Pago'], ['nOperacion','N° Operación']
 ];
 const LIST_MAP = { clase:'claseList', uso:'usoList', tipoPago:'pagoList' };
 
@@ -546,7 +783,7 @@ function updateRecord(id, filename, f, error, rawText){
     `;
     return;
   }
-  records.push({id, filename, fields:f, rawText});
+  records.push({id, filename, fields:f, rawText, pagos:[]});
   const missing = ['aseguradora','certificado','asegurado','clase','placa'].filter(k => !f[k]);
   const badge = missing.length
     ? `<span class="badge warn" title="revisar: ${missing.join(', ')}">revisar (${missing.length})</span>`
@@ -554,7 +791,8 @@ function updateRecord(id, filename, f, error, rawText){
 
   const fieldsHtml = FIELD_LABELS.map(([key,label]) => {
     const listAttr = LIST_MAP[key] ? ` list="${LIST_MAP[key]}"` : '';
-    return `<div class="f"><label>${label}</label><input value="${escapeHtml(f[key]||'')}"${listAttr} onchange="editField('${id}','${key}',this.value)"></div>`;
+    const extraOnchange = key === 'tipoPago' ? `;updatePagoVisibility('${id}',this.value);autoFillTipoPago('${id}',this.value)` : '';
+    return `<div class="f"><label>${label}</label><input id="field-${id}-${key}" value="${escapeHtml(f[key]||'')}"${listAttr} onchange="editField('${id}','${key}',this.value)${extraOnchange}"></div>`;
   }).join('');
 
   card.innerHTML = `
@@ -568,9 +806,133 @@ function updateRecord(id, filename, f, error, rawText){
       <span class="rm" style="text-decoration:underline;" onclick="toggleRaw('${id}')">ver texto extraído ▾</span>
     </div>
     <pre id="raw-${id}" style="display:none;white-space:pre-wrap;font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:6px;max-height:220px;overflow:auto;">${escapeHtml(rawText||'')}</pre>
+
+    <div class="pago-box" id="pagoBox-${id}" style="display:none;">
+      <div class="pago-badge"><span class="dot"></span>Pago electrónico detectado</div>
+      <div class="lbl">Capturas de pago (${escapeHtml(f.tipoPago||'')})</div>
+      <div id="pagoList-${id}"></div>
+      <button style="margin-top:8px;" onclick="addPagoSlot('${id}')">+ Agregar captura</button>
+      <div class="hint">Si un pago cubre más de una placa, agrégala en "otras placas" de esa captura. Si necesitas 2 fotos para esta póliza (ej. límite de Yape), agrega otra captura.</div>
+    </div>
   `;
+  updatePagoVisibility(id, f.tipoPago || '');
   updateSendState();
 }
+
+function addPagoSlot(id){
+  const rec = records.find(r => r.id===id);
+  if(!rec) return;
+  const slotId = crypto.randomUUID();
+  rec.pagos.push({ slotId, image:null, cuenta:'Cuentas', placasExtra:'' });
+  renderPagoSlots(id);
+}
+function removePagoSlot(id, slotId){
+  const rec = records.find(r => r.id===id);
+  if(!rec) return;
+  rec.pagos = rec.pagos.filter(p => p.slotId !== slotId);
+  renderPagoSlots(id);
+}
+function renderPagoSlots(id){
+  const rec = records.find(r => r.id===id);
+  const list = document.getElementById('pagoList-'+id);
+  if(!rec || !list) return;
+  list.innerHTML = rec.pagos.map(p => `
+    <div class="pago-slot" id="slot-${p.slotId}">
+      <div class="pago-drop" id="pagoDrop-${p.slotId}" onclick="document.getElementById('pagoFile-${p.slotId}').click()">
+        ${p.image ? `<img src="${p.image}" class="pago-thumb">` : 'Pegar (Ctrl+V con esta captura activa) o hacer clic'}
+      </div>
+      <input type="file" id="pagoFile-${p.slotId}" accept="image/*" style="display:none;" onchange="handlePagoFile('${id}','${p.slotId}', this.files[0])">
+      <div class="pago-row">
+        <select onchange="editPagoField('${id}','${p.slotId}','cuenta', this.value)">
+          <option value="Cuentas" ${p.cuenta==='Cuentas'?'selected':''}>Cuentas (transferencias)</option>
+          <option value="BBVA" ${p.cuenta==='BBVA'?'selected':''}>BBVA</option>
+          <option value="BCP" ${p.cuenta==='BCP'?'selected':''}>BCP</option>
+        </select>
+        <input type="text" placeholder="Otras placas (opcional, separadas por coma)" value="${escapeHtml(p.placasExtra)}"
+          onchange="editPagoField('${id}','${p.slotId}','placasExtra', this.value)" style="min-width:170px;">
+        <span class="rm" onclick="removePagoSlot('${id}','${p.slotId}')">✕</span>
+      </div>
+    </div>`).join('');
+  rec.pagos.forEach(p => {
+    const dz = document.getElementById('pagoDrop-'+p.slotId);
+    if(!dz) return;
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); handlePagoFile(id, p.slotId, e.dataTransfer.files[0]); });
+  });
+}
+
+function autoFillTipoPago(id, tipoPago){
+  const v = (tipoPago||'').trim().toUpperCase();
+  const fPagoInput = document.getElementById('field-'+id+'-fPago');
+  const nOpInput = document.getElementById('field-'+id+'-nOperacion');
+  if(v === 'PENDIENTE' || v === ''){
+    if(fPagoInput){ fPagoInput.value = ''; editField(id, 'fPago', ''); }
+    if(nOpInput){ nOpInput.value = ''; editField(id, 'nOperacion', ''); }
+    return;
+  }
+  if(fPagoInput && !fPagoInput.value){ fPagoInput.value = todayStr(); editField(id, 'fPago', todayStr()); }
+  if(v === 'EFECTIVO' && nOpInput){ nOpInput.value = 'EFECTIVO'; editField(id, 'nOperacion', 'EFECTIVO'); }
+}
+
+function updatePagoVisibility(id, tipoPago){
+  const box = document.getElementById('pagoBox-'+id);
+  if(!box) return;
+  const v = (tipoPago||'').trim().toUpperCase();
+  const sinFoto = ['', 'EFECTIVO', 'PENDIENTE', 'NO PAGADO'];
+  const debeMostrar = v && sinFoto.indexOf(v) === -1;
+  const yaVisible = box.style.display !== 'none';
+  if(debeMostrar){
+    box.style.display = '';
+    if(!yaVisible){
+      box.classList.remove('active');
+      void box.offsetWidth; // reinicia la animación si vuelve a activarse
+      box.classList.add('active');
+      const rec = records.find(r => r.id===id);
+      if(rec && rec.pagos.length === 0) addPagoSlot(id); // agrega la primera captura automáticamente
+    }
+    const lbl = box.querySelector('.lbl');
+    if(lbl) lbl.textContent = 'Capturas de pago (' + tipoPago + ')';
+  } else {
+    box.style.display = 'none';
+    box.classList.remove('active');
+  }
+}
+
+let activeSlotForPaste = null;
+function handlePagoFile(id, slotId, file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const rec = records.find(r => r.id===id);
+    const slot = rec && rec.pagos.find(p => p.slotId===slotId);
+    if(slot) slot.image = ev.target.result;
+    renderPagoSlots(id);
+  };
+  reader.readAsDataURL(file);
+}
+function editPagoField(id, slotId, key, value){
+  const rec = records.find(r => r.id===id);
+  const slot = rec && rec.pagos.find(p => p.slotId===slotId);
+  if(slot) slot[key] = value;
+}
+// Pegar imagen (Ctrl+V) — se asocia a la última captura vacía de la última tarjeta
+window.addEventListener('paste', e => {
+  if(records.length === 0) return;
+  const items = e.clipboardData?.items;
+  if(!items) return;
+  for(const it of items){
+    if(it.type.indexOf('image') !== -1){
+      const lastRec = records[records.length-1];
+      let slot = lastRec.pagos.find(p => !p.image);
+      if(!slot){
+        addPagoSlot(lastRec.id);
+        slot = lastRec.pagos[lastRec.pagos.length-1];
+      }
+      handlePagoFile(lastRec.id, slot.slotId, it.getAsFile());
+    }
+  }
+});
 
 function toggleRaw(id){
   const pre = document.getElementById('raw-'+id);
@@ -606,7 +968,8 @@ function upperFields(fields){
 sendBtn.addEventListener('click', async () => {
   const token = tokenEl.value.trim();
   if(!token){ setStatus('Falta el token — ábrelo en ⚙️ Configuración.', 'err'); return; }
-  setStatus('Enviando '+records.length+' registro(s)…', '');
+  setStatus('','');
+  statusEl.innerHTML = '<span class="spinner"></span>Enviando '+records.length+' registro(s)…';
   sendBtn.disabled = true;
   try{
     const res = await fetch(DEFAULT_SCRIPT_URL, {
@@ -616,6 +979,28 @@ sendBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if(data.ok){
+      const todasCapturas = [];
+      records.forEach(r => {
+        (r.pagos||[]).filter(p => p.image).forEach(p => {
+          const placas = [r.fields.placa, ...String(p.placasExtra||'').split(',').map(s=>s.trim()).filter(Boolean)]
+            .filter(Boolean).map(s=>s.toUpperCase());
+          todasCapturas.push({ placas, cuenta: p.cuenta, image: p.image });
+        });
+      });
+      if(todasCapturas.length){
+        setStatus('Guardando '+todasCapturas.length+' captura(s) de pago…', '');
+        await Promise.all(todasCapturas.map(c => fetch(PAGOS_SCRIPT_URL, {
+          method:'POST',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify({
+            token: PAGOS_TOKEN, action:'add',
+            placas: c.placas,
+            cuentaDestino: c.cuenta,
+            fechaRegistro: todayStr(),
+            imageBase64: c.image
+          })
+        })));
+      }
       setStatus('Listo — se agregaron '+data.added+' fila(s) al Sheet.', 'ok');
       document.getElementById('clearBtn').click();
     } else {
@@ -631,6 +1016,423 @@ sendBtn.addEventListener('click', async () => {
 function setStatus(msg,cls){ statusEl.textContent = msg; statusEl.className = cls||''; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+// ---- Reportar pagos: seleccionar -> confirmar -> generar ----
+let pendingPagos = [];
+let selectedPagoIds = new Set();
+const QUIEN_REPORTA = 'CHRISTIAN'; // fijo, no se pide en cada reporte
+
+document.getElementById('fechaReporte').valueAsDate = new Date();
+
+async function openSelectPagos(){
+  const statusEl2 = document.getElementById('pagosLoadStatus');
+  statusEl2.innerHTML = '<span class="spinner"></span>Cargando pendientes…';
+  selectedPagoIds.clear();
+  try{
+    const res = await fetch(PAGOS_SCRIPT_URL + '?token=' + encodeURIComponent(PAGOS_TOKEN) + '&reportado=false');
+    const data = await res.json();
+    if(!data.ok){ statusEl2.textContent = 'Error: ' + data.error; return; }
+    pendingPagos = data.rows;
+
+    // También trae las pólizas con Tipo Pago = PENDIENTE (sin foto todavía), solo informativo
+    let sinFoto = [];
+    try{
+      const rowsPolizas = applyAseguradoraFilter ? await fetchAllRows(false) : [];
+      sinFoto = rowsPolizas.filter(r => esPendiente(r['Tipo Pago']));
+    }catch(e2){ /* si falla, se omite esa parte informativa */ }
+    pendingSinFoto = sinFoto;
+
+    statusEl2.textContent = '';
+    document.getElementById('selectStatus').textContent = pendingPagos.length + ' con captura, ' + sinFoto.length + ' sin foto todavía.';
+    renderPendingPagos();
+    document.getElementById('selectModal').style.display = 'flex';
+  }catch(err){
+    statusEl2.textContent = 'No se pudo conectar: ' + err.message;
+  }
+}
+function closeSelectPagos(){ document.getElementById('selectModal').style.display = 'none'; }
+
+let pendingSinFoto = [];
+function renderPendingPagos(){
+  const grid = document.getElementById('pendingGrid');
+  if(pendingPagos.length === 0 && pendingSinFoto.length === 0){
+    grid.innerHTML = '<div class="empty">No hay nada pendiente.</div>';
+    return;
+  }
+  const conFoto = pendingPagos.map(r => `
+    <div class="pcard" id="pc-${r.ID}">
+      <div class="check" onclick="event.stopPropagation();togglePagoSel('${r.ID}')"></div>
+      <img src="${r['Drive Url']}" loading="lazy" onclick='previewPago(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+      <div class="placa">${escapeHtml(r.Placa)}</div>
+      <div class="fecha">${escapeHtml(r['Fecha Registro'])} · ${escapeHtml(r['Cuenta Destino'])}</div>
+    </div>`).join('');
+  const sinFotoHtml = pendingSinFoto.map(r => `
+    <div class="pcard sinfoto">
+      <div class="placa">${escapeHtml(r['Placa ']!==undefined ? r['Placa '] : (r['Placa']||''))}</div>
+      <div class="fecha">${escapeHtml(r['Asegurado']||'')}</div>
+      <div class="badge warn" style="margin-top:6px;">SIN FOTO AÚN</div>
+    </div>`).join('');
+  grid.innerHTML = conFoto + sinFotoHtml;
+  updateSelCount();
+}
+function previewPago(r){
+  document.getElementById('previewPane').style.display = '';
+  document.getElementById('previewImg').src = r['Drive Url'];
+  document.getElementById('previewLabel').textContent = r.Placa + ' — ' + r['Cuenta Destino'] + ' — ' + r['Fecha Registro'];
+  togglePagoSel(r.ID);
+}
+function togglePagoSel(id){
+  if(selectedPagoIds.has(id)) selectedPagoIds.delete(id); else selectedPagoIds.add(id);
+  document.getElementById('pc-'+id).classList.toggle('sel');
+  updateSelCount();
+}
+function selectAllPagos(){
+  pendingPagos.forEach(r => {
+    selectedPagoIds.add(r.ID);
+    const el = document.getElementById('pc-'+r.ID);
+    if(el) el.classList.add('sel');
+  });
+  updateSelCount();
+}
+function updateSelCount(){ document.getElementById('selCount').textContent = selectedPagoIds.size; }
+
+let reportedRowsCache = [];
+function openConfirmPagos(){
+  if(selectedPagoIds.size === 0) return;
+  reportedRowsCache = pendingPagos.filter(r => selectedPagoIds.has(r.ID));
+  const fechaISO = document.getElementById('fechaReporte').value;
+  const fecha = fechaISO ? fechaISO.split('-').reverse().join('/') : todayStr();
+  window._fechaReporte = fecha;
+  document.getElementById('confirmFecha').textContent = fecha;
+
+  document.getElementById('confirmList').innerHTML = reportedRowsCache.map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);">
+      <img src="${r['Drive Url']}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;">
+      <div style="flex:1;font-family:var(--mono);font-size:12px;">
+        <b>${escapeHtml(r.Placa)}</b> — ${escapeHtml(r['Cuenta Destino'])} — ${escapeHtml(r['Fecha Registro'])}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('selectModal').style.display = 'none';
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+function closeConfirmPagos(){
+  document.getElementById('confirmModal').style.display = 'none';
+  document.getElementById('selectModal').style.display = 'flex';
+}
+
+async function finalizeReport(){
+  const statusEl2 = document.getElementById('confirmStatus');
+  statusEl2.textContent = 'Generando…'; statusEl2.className='';
+
+  const fecha = window._fechaReporte;
+  const grupos = {};
+  reportedRowsCache.forEach(r => {
+    const cuenta = r['Cuenta Destino'] || 'Sin cuenta';
+    if(!grupos[cuenta]) grupos[cuenta] = [];
+    grupos[cuenta].push(r);
+  });
+
+  const container = document.getElementById('reportGroups');
+  container.innerHTML = Object.entries(grupos).map(([cuenta, items]) => `
+    <div class="report-group">
+      <div class="report-group-title">${escapeHtml(QUIEN_REPORTA)} - ${escapeHtml(fecha)}</div>
+      <div class="report-group-sub">${escapeHtml(cuenta)} — ${items.length} pago(s)</div>
+      <div class="report-grid">
+        ${items.map(r => `
+          <div class="rcell">
+            <div class="rhead">${escapeHtml(QUIEN_REPORTA)} - ${escapeHtml(fecha)}</div>
+            <div class="rimg"><img src="${r['Drive Url']}"></div>
+            <div class="rfoot">${escapeHtml(r.Placa)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  try{
+    const resPagos = await fetch(PAGOS_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        token: PAGOS_TOKEN, action:'markReported',
+        ids: reportedRowsCache.map(r=>r.ID),
+        quienReporta: QUIEN_REPORTA, fechaReporte: fecha
+      })
+    });
+    const dataPagos = await resPagos.json();
+
+    const token = tokenEl.value.trim();
+    const resPolizas = await fetch(DEFAULT_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        token, action:'updateReporte',
+        updates: reportedRowsCache.map(r => ({ placa: r.Placa, fechaReporte: fecha }))
+      })
+    });
+    const dataPolizas = await resPolizas.json();
+
+    if(dataPagos.ok && dataPolizas.ok){
+      statusEl2.textContent = 'Listo: ' + dataPagos.updated + ' pago(s) y ' + dataPolizas.updated + ' póliza(s) actualizadas.';
+      statusEl2.className = 'ok';
+    } else {
+      statusEl2.textContent = 'Error: ' + (dataPagos.error || dataPolizas.error || 'desconocido');
+      statusEl2.className = 'err';
+    }
+  }catch(err){
+    statusEl2.textContent = 'No se pudo conectar: ' + err.message; statusEl2.className='err';
+  }
+
+  document.getElementById('confirmModal').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('reportView').style.display = 'block';
+  document.getElementById('verUltimoBtn').style.display = '';
+  loadPendingCount();
+}
+
+function backToMain(){
+  document.getElementById('app').style.display = '';
+  document.getElementById('reportView').style.display = 'none';
+}
+function verUltimoReporte(){
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('reportView').style.display = 'block';
+}
+
+function base64ToUint8Array(base64){
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+function getImageDims(src){
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({width: img.naturalWidth || 170, height: img.naturalHeight || 210});
+    img.onerror = () => resolve({width: 170, height: 210});
+    img.src = src;
+  });
+}
+function computeContainSize(natW, natH, maxW, maxH){
+  const ratio = Math.min(maxW / natW, maxH / natH, 1);
+  return { width: Math.max(1, Math.round(natW * ratio)), height: Math.max(1, Math.round(natH * ratio)) };
+}
+
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('falló ' + src));
+    document.head.appendChild(s);
+  });
+}
+async function ensureDocxLib(){
+  if(typeof window.docx !== 'undefined') return;
+  const cdns = [
+    'https://unpkg.com/docx@8.5.0/build/index.umd.js',
+    'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js',
+    'https://unpkg.com/docx@8.5.0/build/index.js',
+    'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js'
+  ];
+  for(const url of cdns){
+    try{
+      await loadScript(url);
+      if(typeof window.docx !== 'undefined') return;
+    }catch(e){ /* prueba el siguiente */ }
+  }
+  throw new Error('no se pudo cargar la librería de Word (revisa tu internet)');
+}
+
+async function generateWordReport(){
+  const statusEl3 = document.getElementById('wordStatus');
+  statusEl3.innerHTML = '<span class="spinner"></span>Generando Word…';
+  try{
+    await ensureDocxLib();
+    const ids = reportedRowsCache.map(r => r.ID);
+    const res = await fetch(PAGOS_SCRIPT_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ token: PAGOS_TOKEN, action:'getImagesBase64', ids })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'no se pudieron traer las imágenes');
+
+    const { Document, Packer, Paragraph, Table, TableRow, TableCell, ImageRun, TextRun,
+            WidthType, AlignmentType, BorderStyle } = docx;
+
+    const fecha = window._fechaReporte || todayStr();
+    const grupos = {};
+    reportedRowsCache.forEach(r => {
+      const cuenta = r['Cuenta Destino'] || 'Sin cuenta';
+      if(!grupos[cuenta]) grupos[cuenta] = [];
+      grupos[cuenta].push(r);
+    });
+
+    const cellBorder = { style: BorderStyle.SINGLE, size: 4, color: '000000' };
+    const borders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
+    const noBorders = { top: {style:BorderStyle.NONE}, bottom: {style:BorderStyle.NONE}, left: {style:BorderStyle.NONE}, right: {style:BorderStyle.NONE} };
+
+    // Arma una tabla independiente (nombre-fecha / foto / placa) para UNA sola captura
+    async function buildUnitTable(r){
+      const imgData = r ? data.images[r.ID] : null;
+      let imageChildren = [new TextRun('(sin imagen)')];
+      if(imgData){
+        const src = 'data:' + imgData.mime + ';base64,' + imgData.base64;
+        const dims = await getImageDims(src);
+        const box = computeContainSize(dims.width, dims.height, 170, 210);
+        const ext = (imgData.mime.split('/')[1] || 'jpg').replace('jpeg','jpg');
+        imageChildren = [new ImageRun({ data: base64ToUint8Array(imgData.base64), transformation: box, type: ext })];
+      }
+      if(!r){
+        return new Table({ rows: [ new TableRow({ children: [ new TableCell({ borders: noBorders, children: [new Paragraph('')] }) ] }) ], width: { size: 100, type: WidthType.PERCENTAGE } });
+      }
+      return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({ children: [ new TableCell({ borders, children: [ new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: QUIEN_REPORTA + ' - ' + fecha, bold: true, size: 18 })] }) ] }) ] }),
+          new TableRow({ children: [ new TableCell({ borders, children: [ new Paragraph({ alignment: AlignmentType.CENTER, children: imageChildren }) ] }) ] }),
+          new TableRow({ children: [ new TableCell({ borders, children: [ new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: r.Placa || '', bold: true, size: 22 })] }) ] }) ] })
+        ]
+      });
+    }
+
+    const children = [];
+    const cuentas = Object.entries(grupos);
+    for(let g = 0; g < cuentas.length; g++){
+      const [cuenta, items] = cuentas[g];
+
+      children.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        pageBreakBefore: g > 0, // cada cuenta empieza en hoja nueva, menos la primera
+        children: [new TextRun({ text: QUIEN_REPORTA + ' - ' + fecha, bold: true, size: 32 })]
+      }));
+      children.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: (cuenta + ' — ' + items.length + ' pago(s)').toUpperCase(), italics: true, size: 20, color: '666666' })]
+      }));
+      children.push(new Paragraph({ text: '' }));
+
+      // Tabla exterior sin bordes, de 3 columnas — cada celda contiene su propia tabla independiente
+      const outerRows = [];
+      for(let i = 0; i < items.length; i += 3){
+        const rowItems = items.slice(i, i+3);
+        while(rowItems.length < 3) rowItems.push(null);
+        const outerCells = [];
+        for(const r of rowItems){
+          const unitTable = await buildUnitTable(r);
+          outerCells.push(new TableCell({
+            width: { size: 33, type: WidthType.PERCENTAGE },
+            borders: noBorders,
+            margins: { top: 60, bottom: 60, left: 60, right: 60 },
+            children: [ unitTable ]
+          }));
+        }
+        outerRows.push(new TableRow({ children: outerCells }));
+      }
+      children.push(new Table({ rows: outerRows, borders: noBorders, width: { size: 100, type: WidthType.PERCENTAGE } }));
+    }
+
+    const doc = new Document({ sections: [{ children }] });
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'LIMA-OF_reporte_' + fecha.replace(/\//g,'-') + '.docx';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    statusEl3.textContent = 'Word generado y descargado.';
+  }catch(err){
+    statusEl3.textContent = 'Error generando Word: ' + err.message;
+  }
+}
+
+function showSection(name){
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+name);
+  if(navEl) navEl.classList.add('active');
+
+  const polizas = document.getElementById('panelPolizas');
+  const buscar = document.getElementById('panelBuscar');
+  const pagos = document.getElementById('pagosPanel');
+  const titleEl = document.getElementById('buscarTitle');
+  const searchRow = document.getElementById('searchRow');
+  const tabsPend = document.getElementById('tabsPendientes');
+  const btnHoy = document.getElementById('btnHoy');
+  polizas.style.display = 'none';
+  buscar.style.display = 'none';
+  pagos.style.display = 'none';
+
+  if(name === 'inicio'){
+    polizas.style.display = '';
+  } else if(name === 'buscar'){
+    buscar.style.display = '';
+    titleEl.textContent = 'Buscar en el Sheet';
+    searchRow.style.display = '';
+    tabsPend.style.display = 'none';
+    btnHoy.style.display = '';
+  } else if(name === 'pendientes'){
+    buscar.style.display = '';
+    titleEl.textContent = 'Pendientes';
+    searchRow.style.display = 'none';
+    tabsPend.style.display = 'inline-flex';
+    btnHoy.style.display = 'none';
+    setTabPend('pago');
+  } else if(name === 'reportados'){
+    buscar.style.display = '';
+    titleEl.textContent = 'Reportados por fecha';
+    searchRow.style.display = 'none';
+    tabsPend.style.display = 'none';
+    btnHoy.style.display = 'none';
+    loadReportadoPorFecha();
+  } else if(name === 'pagos'){
+    pagos.style.display = 'flex';
+  }
+}
+function setTabPend(which){
+  document.getElementById('tabPendPago').classList.toggle('active', which==='pago');
+  document.getElementById('tabPendRep').classList.toggle('active', which==='reporte');
+  if(which==='pago') loadPendingPagoField(); else loadPendingReporte();
+}
+// Las tarjetas de stats navegan a su sección
+document.getElementById('statPendPago').parentElement.style.cursor='pointer';
+document.getElementById('statPendPago').parentElement.onclick=()=>showSection('pendientes');
+document.getElementById('statPendReporte').parentElement.style.cursor='pointer';
+document.getElementById('statPendReporte').parentElement.onclick=()=>showSection('pagos');
+document.getElementById('statReportadosHoy').parentElement.style.cursor='pointer';
+document.getElementById('statReportadosHoy').parentElement.onclick=()=>showSection('reportados');
+
+async function loadPendingCount(){
+  try{
+    const res = await fetch(PAGOS_SCRIPT_URL + '?token=' + encodeURIComponent(PAGOS_TOKEN) + '&reportado=false');
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('pendingCountNum').textContent = data.rows.length;
+      document.getElementById('statPendReporte').textContent = data.rows.length;
+    }
+  }catch(err){ /* silencioso, no molesta si falla */ }
+}
+
+async function loadStatsBar(){
+  document.getElementById('statCargados').textContent = records.length;
+  try{
+    const rows = await fetchAllRows(false);
+    const hoy = todayStr();
+    document.getElementById('statPendPago').textContent = rows.filter(r => esPendiente(r['Tipo Pago'])).length;
+    document.getElementById('statReportadosHoy').textContent = rows.filter(r => (r['F/Reporte']||'') === hoy).length;
+  }catch(err){
+    document.getElementById('statPendPago').textContent = '0';
+    document.getElementById('statReportadosHoy').textContent = '0';
+  }
+}
+loadStatsBar();
+setTimeout(loadStatsBar, 4000); // reintento por si el primer fetch falló al abrir
+
+// Mantiene la página al día sola: refresca stats + pendientes cada 30s, forzando releer el Sheet
+setInterval(() => {
+  allRowsCache = null; // que el próximo fetch traiga datos frescos, no lo guardado en memoria
+  loadStatsBar();
+  loadPendingCount();
+}, 30000);
+setInterval(() => { document.getElementById('statCargados').textContent = records.length; }, 1500);
+loadPendingCount();
+
 // ---- Búsqueda / base de datos (lee el Sheet vía doGet, protegido con el mismo token) ----
 let allRowsCache = null;
 const searchStatusEl = document.getElementById('searchStatus');
@@ -641,7 +1443,7 @@ async function fetchAllRows(force){
   const token = tokenEl.value.trim();
   if(!token){ searchStatusEl.textContent = 'Falta el token — ábrelo en ⚙️ Configuración.'; return []; }
   if(allRowsCache && !force) return allRowsCache;
-  searchStatusEl.textContent = 'Cargando datos del Sheet…';
+  searchStatusEl.innerHTML = '<span class="spinner"></span>Cargando datos del Sheet…';
   try{
     const res = await fetch(DEFAULT_SCRIPT_URL + '?token=' + encodeURIComponent(token));
     const data = await res.json();
@@ -656,12 +1458,14 @@ async function fetchAllRows(force){
 }
 
 function renderSearchRows(rows){
+  document.getElementById('fechaGroups').innerHTML = '';
   if(rows.length === 0){
     searchTbl.style.display = 'none';
     searchStatusEl.textContent = 'Sin resultados.';
     return;
   }
   searchTbl.style.display = '';
+  searchStatusEl.textContent = rows.length + ' resultado(s).';
   searchRowsEl.innerHTML = rows.map(r => `
     <tr>
       <td>${escapeHtml(r['Compañía']||'')}</td>
@@ -674,36 +1478,186 @@ function renderSearchRows(rows){
       <td>${escapeHtml(r['Precio']||'')}</td>
       <td>${escapeHtml(r['Tipo Pago']||'')}</td>
       <td>${escapeHtml(r['F/Pago']||'')}</td>
+      <td>${escapeHtml(r['F/Reporte']||'')}</td>
+      <td><span class="rm" style="text-decoration:underline;font-size:11px;" onclick='openEditPago(${JSON.stringify(r).replace(/'/g,"&#39;")})'>Editar</span></td>
     </tr>`).join('');
 }
 
+function applyAseguradoraFilter(rows){
+  const a = document.getElementById('filterAseguradora').value.trim().toUpperCase();
+  if(!a) return rows;
+  return rows.filter(r => String(r['Compañía']||'').toUpperCase() === a);
+}
+
 async function loadAllRows(){
-  const rows = await fetchAllRows(true);
+  const rows = applyAseguradoraFilter(await fetchAllRows(true));
   renderSearchRows(rows);
 }
 
 async function runSearch(){
   const q = document.getElementById('searchInput').value.trim().toUpperCase();
-  const rows = await fetchAllRows(false);
-  if(!q){ renderSearchRows(rows); return; }
-  const filtered = rows.filter(r => {
-    const cert = String(r['Certificado']||'').toUpperCase();
-    const placa = String(r['Placa ']!==undefined ? r['Placa '] : (r['Placa']||'')).toUpperCase();
-    const nombre = String(r['Asegurado']||'').toUpperCase();
-    return cert.includes(q) || placa.includes(q) || nombre.includes(q);
-  });
+  let rows = applyAseguradoraFilter(await fetchAllRows(false));
+  if(q){
+    rows = rows.filter(r => {
+      const cert = String(r['Certificado']||'').toUpperCase();
+      const placa = String(r['Placa ']!==undefined ? r['Placa '] : (r['Placa']||'')).toUpperCase();
+      const nombre = String(r['Asegurado']||'').toUpperCase();
+      return cert.includes(q) || placa.includes(q) || nombre.includes(q);
+    });
+  }
+  renderSearchRows(rows);
+}
+
+function esPendiente(v){
+  const s = String(v||'').trim().toUpperCase();
+  return s === '' || s === 'PENDIENTE';
+}
+async function loadPendingPagoField(){
+  const rows = applyAseguradoraFilter(await fetchAllRows(false));
+  const filtered = rows.filter(r => esPendiente(r['Tipo Pago']));
   renderSearchRows(filtered);
 }
 
-async function showPending(){
-  const rows = await fetchAllRows(false);
-  const pending = rows.filter(r => {
-    const tp = String(r['Tipo Pago']||'').trim().toUpperCase();
-    return tp === '' || tp.includes('NO PAGADO') || tp.includes('PENDIENTE');
-  });
-  renderSearchRows(pending);
+async function loadPendingReporte(){
+  const rows = applyAseguradoraFilter(await fetchAllRows(false));
+  const filtered = rows.filter(r => esPendiente(r['F/Reporte']));
+  renderSearchRows(filtered);
 }
+
+async function loadHoy(){
+  const rows = applyAseguradoraFilter(await fetchAllRows(false));
+  const hoy = todayStr();
+  renderSearchRows(rows.filter(r => (r['F/Venta']||'') === hoy));
+}
+
+async function loadReportadoPorFecha(){
+  document.getElementById('searchTbl').style.display = 'none';
+  const rows = applyAseguradoraFilter(await fetchAllRows(false));
+  const reportadas = rows.filter(r => !esPendiente(r['F/Reporte']));
+  const grupos = {};
+  reportadas.forEach(r => {
+    const fecha = r['F/Reporte'] || 'Sin fecha';
+    if(!grupos[fecha]) grupos[fecha] = [];
+    grupos[fecha].push(r);
+  });
+  const fechas = Object.keys(grupos).sort((a,b) => {
+    const [da,ma,ya] = a.split('/'); const [db,mb,yb] = b.split('/');
+    return new Date(yb,mb-1,db) - new Date(ya,ma-1,da);
+  });
+  const cont = document.getElementById('fechaGroups');
+  if(fechas.length === 0){ cont.innerHTML = '<div class="hint">Todavía no hay nada reportado.</div>'; return; }
+  cont.innerHTML = fechas.map(fecha => `
+    <div class="panel" style="margin-top:10px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='none' ? '' : 'none';">
+        <b style="font-family:var(--serif);">${escapeHtml(fecha)}</b>
+        <span class="badge ok">${grupos[fecha].length} reportada(s)</span>
+      </div>
+      <div style="display:none;margin-top:10px;font-family:var(--mono);font-size:12px;">
+        ${grupos[fecha].map(r => `<div style="padding:4px 0;border-bottom:1px solid var(--line);"><b>${escapeHtml(r['Certificado']||'')}</b> — ${escapeHtml(r['Placa ']!==undefined?r['Placa ']:(r['Placa']||''))} — ${escapeHtml(r['Asegurado']||'')} — ${escapeHtml(r['Compañía']||'')}</div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') runSearch(); });
+
+let editingCertificado = null;
+let editingPlaca = null;
+let editPagoImage = null;
+function openEditPago(r){
+  editingCertificado = r['Certificado'];
+  editingPlaca = r['Placa ']!==undefined ? r['Placa '] : (r['Placa']||'');
+  editPagoImage = null;
+  document.getElementById('editPagoInfo').textContent = editingPlaca + ' — ' + (r['Asegurado']||'');
+  document.getElementById('editTipoPago').value = r['Tipo Pago'] || '';
+  document.getElementById('editFPago').value = r['F/Pago'] || '';
+  document.getElementById('editNOperacion').value = r['N° Operación'] || '';
+  document.getElementById('editPagoThumb').style.display = 'none';
+  document.getElementById('editPagoDropText').style.display = '';
+  document.getElementById('editPagoStatus').textContent = '';
+  updateEditPagoBoxVisibility(r['Tipo Pago'] || '');
+  document.getElementById('editPagoModal').style.display = 'flex';
+}
+function closeEditPago(){ document.getElementById('editPagoModal').style.display = 'none'; }
+function updateEditPagoBoxVisibility(tipoPago){
+  const v = (tipoPago||'').trim().toUpperCase();
+  const sinFoto = ['', 'EFECTIVO', 'PENDIENTE', 'NO PAGADO'];
+  document.getElementById('editPagoBox').style.display = (v && sinFoto.indexOf(v) === -1) ? '' : 'none';
+}
+function handleEditPagoFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    editPagoImage = ev.target.result;
+    document.getElementById('editPagoThumb').src = editPagoImage;
+    document.getElementById('editPagoThumb').style.display = 'block';
+    document.getElementById('editPagoDropText').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+document.getElementById('editPagoDrop').addEventListener('dragover', e => { e.preventDefault(); e.currentTarget.classList.add('drag'); });
+document.getElementById('editPagoDrop').addEventListener('dragleave', e => e.currentTarget.classList.remove('drag'));
+document.getElementById('editPagoDrop').addEventListener('drop', e => { e.preventDefault(); e.currentTarget.classList.remove('drag'); handleEditPagoFile(e.dataTransfer.files[0]); });
+window.addEventListener('paste', e => {
+  if(document.getElementById('editPagoModal').style.display !== 'flex') return;
+  const items = e.clipboardData?.items;
+  if(!items) return;
+  for(const it of items){ if(it.type.indexOf('image') !== -1) handleEditPagoFile(it.getAsFile()); }
+});
+
+function autoFillEditPago(tipoPago){
+  const v = (tipoPago||'').trim().toUpperCase();
+  const fPagoInput = document.getElementById('editFPago');
+  const nOpInput = document.getElementById('editNOperacion');
+  updateEditPagoBoxVisibility(tipoPago);
+  if(v === 'PENDIENTE' || v === ''){
+    fPagoInput.value = ''; nOpInput.value = '';
+    return;
+  }
+  fPagoInput.value = todayStr(); // la fecha del momento en que se está editando/actualizando
+  if(v === 'EFECTIVO') nOpInput.value = 'EFECTIVO';
+}
+
+async function saveEditPago(){
+  const token = tokenEl.value.trim();
+  const statusEl2 = document.getElementById('editPagoStatus');
+  statusEl2.innerHTML = '<span class="spinner"></span>Guardando…'; statusEl2.className = '';
+  try{
+    const res = await fetch(DEFAULT_SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        token, action:'updateCampos',
+        certificado: editingCertificado,
+        tipoPago: document.getElementById('editTipoPago').value.toUpperCase(),
+        fPago: document.getElementById('editFPago').value,
+        nOperacion: document.getElementById('editNOperacion').value.toUpperCase()
+      })
+    });
+    const data = await res.json();
+    if(data.ok && editPagoImage){
+      await fetch(PAGOS_SCRIPT_URL, {
+        method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({
+          token: PAGOS_TOKEN, action:'add',
+          placas: [editingPlaca],
+          cuentaDestino: document.getElementById('editPagoCuenta').value,
+          fechaRegistro: todayStr(),
+          imageBase64: editPagoImage
+        })
+      });
+      loadPendingCount(); loadStatsBar();
+    }
+    if(data.ok){
+      statusEl2.textContent = 'Actualizado.'; statusEl2.className = 'ok';
+      allRowsCache = null;
+      setTimeout(() => { closeEditPago(); runSearch(); }, 800);
+    } else {
+      statusEl2.textContent = 'Error: ' + data.error; statusEl2.className = 'err';
+    }
+  }catch(err){
+    statusEl2.textContent = 'No se pudo conectar: ' + err.message; statusEl2.className = 'err';
+  }
+}
 </script>
 </body>
 </html>
