@@ -1435,6 +1435,8 @@ loadPendingCount();
 
 // ---- Búsqueda / base de datos (lee el Sheet vía doGet, protegido con el mismo token) ----
 let allRowsCache = null;
+let allRowsCacheTime = 0;
+const CACHE_FRESH_MS = 20000; // si los datos tienen menos de 20s, no vuelve a pedirlos aunque se "fuerce"
 const searchStatusEl = document.getElementById('searchStatus');
 const searchTbl = document.getElementById('searchTbl');
 const searchRowsEl = document.getElementById('searchRows');
@@ -1442,13 +1444,15 @@ const searchRowsEl = document.getElementById('searchRows');
 async function fetchAllRows(force){
   const token = tokenEl.value.trim();
   if(!token){ searchStatusEl.textContent = 'Falta el token — ábrelo en ⚙️ Configuración.'; return []; }
-  if(allRowsCache && !force) return allRowsCache;
+  const fresco = allRowsCache && (Date.now() - allRowsCacheTime < CACHE_FRESH_MS);
+  if(allRowsCache && (!force || fresco)) return allRowsCache;
   searchStatusEl.innerHTML = '<span class="spinner"></span>Cargando datos del Sheet…';
   try{
     const res = await fetch(DEFAULT_SCRIPT_URL + '?token=' + encodeURIComponent(token));
     const data = await res.json();
     if(!data.ok){ searchStatusEl.textContent = 'Error: ' + (data.error || 'desconocido'); return []; }
     allRowsCache = data.rows || [];
+    allRowsCacheTime = Date.now();
     searchStatusEl.textContent = allRowsCache.length + ' registro(s) en el Sheet.';
     return allRowsCache;
   }catch(err){
