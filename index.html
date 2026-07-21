@@ -338,7 +338,7 @@
       <h2 style="margin-bottom:10px;">Reportar pagos</h2>
       <div class="cfg-row" style="margin-bottom:0;">
         <div class="field"><label>Fecha de reporte</label><input type="date" id="fechaReporte"></div>
-        <button class="primary" onclick="openSelectPagos()">Reportar pendientes</button>
+        <button class="primary" onclick="checkReportPassword()">Reportar pendientes</button>
         <button id="verUltimoBtn" style="display:none;" onclick="verUltimoReporte()">Ver último reporte generado</button>
       </div>
       <div class="hint" id="pagosLoadStatus" style="margin-top:8px;"></div>
@@ -372,6 +372,19 @@
       <button class="primary" onclick="openConfirmPagos()">Continuar (<span id="selCount">0</span> seleccionadas)</button>
       <button onclick="selectAllPagos()">Seleccionar todas</button>
       <button onclick="closeSelectPagos()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="reportPwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;align-items:center;justify-content:center;padding:16px;">
+  <div class="panel" style="max-width:340px;width:100%;margin:0;text-align:center;">
+    <h2 style="margin:0 0 6px;">Reportar pendientes</h2>
+    <p class="hint" style="margin-bottom:16px;">Ingresa la contraseña para continuar.</p>
+    <input type="password" id="reportPwInput" placeholder="Contraseña" style="text-align:center;letter-spacing:.15em;margin-bottom:10px;">
+    <div class="hint err" id="reportPwErr" style="min-height:16px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button onclick="closeReportPassword()">Cancelar</button>
+      <button class="primary" onclick="confirmReportPassword()">Entrar</button>
     </div>
   </div>
 </div>
@@ -1022,6 +1035,25 @@ let selectedPagoIds = new Set();
 const QUIEN_REPORTA = 'CHRISTIAN'; // fijo, no se pide en cada reporte
 
 document.getElementById('fechaReporte').valueAsDate = new Date();
+
+const REPORT_PASSWORD = '2025';
+function checkReportPassword(){
+  document.getElementById('reportPwInput').value = '';
+  document.getElementById('reportPwErr').textContent = '';
+  document.getElementById('reportPwModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('reportPwInput').focus(), 50);
+}
+function closeReportPassword(){ document.getElementById('reportPwModal').style.display = 'none'; }
+function confirmReportPassword(){
+  const val = document.getElementById('reportPwInput').value;
+  if(val === REPORT_PASSWORD){
+    closeReportPassword();
+    openSelectPagos();
+  } else {
+    document.getElementById('reportPwErr').textContent = 'Contraseña incorrecta.';
+  }
+}
+document.getElementById('reportPwInput').addEventListener('keydown', e => { if(e.key==='Enter') confirmReportPassword(); });
 
 async function openSelectPagos(){
   const statusEl2 = document.getElementById('pagosLoadStatus');
